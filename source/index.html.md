@@ -15,7 +15,7 @@ search: true
 
 # Introduction
 
-Welcome to the Ongair API! You can use our API to create awesome Bots and IM applications.
+Welcome to the [Ongair](https://ongair.im) API! You can use our API to create awesome Bots and IM applications.
 
 This API allows you to send and receive:
 
@@ -26,9 +26,7 @@ If you have any questions feel free to contact us at [dev@ongair.im](mailto:dev@
 
 ## Enable the API
 
-Go to settings > Account and tick enable.
-
-[[images/enable_api.png]]
+Go to **settings** > **Account** and tick enable.
 
 # Security
 
@@ -53,15 +51,23 @@ Authorization | Token token="enter_token_here”
 > URL
 
 ```
-  https://app.ongair.im/api/v1/base/status?token=<enter_token_here>
+  https://ongair.im/api/v1/base/status?token=<enter_token_here>
+```
+
+```shell
+  curl "https://ongair.im/api/v1/base/status" \
+  -h "Content-Type' => 'application/json" \
+  -d token=<enter_token_here>
 ```
 
 ## Authentication Error
 
 In the event of an authentication error .e.g. no token is provided or an invalid token is provided then the result is a 401 error code with the response:
 
-```
-  {"error":"Invalid API Token"}
+```json
+  {
+    "error":"Invalid API Token"
+  }
 ```
 
 # Status
@@ -78,6 +84,10 @@ Status Method returns a health check of the system.
 
 GET
 
+```shell
+  curl -X GET "https://ongair.im/api/v1/base/status" \
+    -d token=<enter_token_here>
+```
 
 ## Response
 
@@ -112,6 +122,13 @@ Sets up a contact in the contacts database. This acts as an opt-in before messag
 
 POST
 
+```shell
+  curl -X POST "https://ongair.im/api/v1/base/create_contact" \
+    -d phone_number=12345678 \
+    -d name=xxxxxxx \
+    -d token=<enter_token_here>
+```
+
 ## Contact Params
 
 Field | Type | Mandatory | Format | Meaning 
@@ -123,8 +140,10 @@ name | String | Yes | Utf8 only encoded strings | The contact name
 
 > The server responds with a JSON message:
 
-```
-  {"created":true,"id":2067}
+```json
+  {
+    "created":true,"id":2067
+  }
 ```
 
 # Create a Group
@@ -141,22 +160,22 @@ Creates a group. This call is asynchronous. This means that the group will not b
 
 POST
 
+> Example
+
+```shell
+curl "https://ongair.im/api/v1/base/create_group" \
+  -d name=GroupName \
+  -d members[]=254722200200 \
+  -d members[]=254722201201 \
+  -d token=YOUR_API_TOKEN”
+```
+
 ## Group Params
 
 Field | Type | Mandatory | Format | Meaning 
 ------|------|-----------|--------|-------------
 name | String | Yes | Utf8 only encoded strings | The group subject name
 Members | Array | Yes | Utf8 only encoded strings | The phone number of the members to be added to the group
-
-> Example
-
-```shell
-curl "https://app.ongair.im/api/v1/base/create_group" \
-  -d name=GroupName \
-  -d members[]=254722200200 \
-  -d members[]=254722201201 \
-  -d token=YOUR_API_TOKEN”
-```
 
 ## Response
 
@@ -200,6 +219,14 @@ This adds participants to an existing group.
 
 POST
 
+```shell
+curl -X POST "https://ongair.im/api/v1/base/groups/{id}/add_participants" \
+  -d members[]=12345678 \
+  -d members[]=12345678 \
+  -d members[]=12345678 \
+  -d token=<enter_token_here>
+```
+
 ## Params
 
 Field | Type | Mandatory | Format | Meaning
@@ -211,16 +238,20 @@ Members | Array | Yes | Utf8 only encoded strings | The phone number of the memb
 
 > The server responds with a JSON message
 
-```
-  {"added": true }
+```json
+  {
+    "added": true 
+  }
 ```
 
 ## Error
 
 > If there is an error, the server returns an error message and response code of 422.
 
-```
-  {"error":"Group with the name ‘test’ already exists"}
+```json
+  {
+    "error":"Group with the name ‘test’ already exists"
+  }
 ```
 
 # Get Group Members
@@ -236,6 +267,10 @@ This function returns the contacts that belong to a specific group.
 ## Method
 
 GET
+
+```shell
+  curl -X GET "https://ongair.im/api/v1/base/groups/{id}/members"
+```
 
 ## Params
 
@@ -276,8 +311,10 @@ Contacts | Array | An array of the members of the group. For each member, the id
 
 > If there is an error, the server returns an error message and response code of 422
 
-```
-  {"error": "No group with id ‘2’ exists"}
+```json
+  {
+    "error": "No group with id ‘2’ exists"
+  }
 ```
 
 # Remove Participant from a Group
@@ -293,6 +330,12 @@ This removes a participant from a group from which the Ongair hosted account is 
 ## Method
 
 POST
+
+```shell
+curl -X POST "https://ongair.im/api/v1/base/groups/{id}/remove_participant" \
+  -d phone_number=12345678
+  -d token=<enter_token_here>
+```
 
 ## Params
 
@@ -337,6 +380,14 @@ Method sends a text message to a single recipient. Please note that there is a s
 
 POST
 
+```shell
+curl -X POST "https://ongair.im/api/v1/base/send" \
+  -d phone_number=12345678 \
+  -d text="Hey" \
+  -d thread=true // optional
+  -d token=<enter_token_here>
+```
+
 ### Params
 
 Field | Type | Mandatory | Format | Meaning 
@@ -376,7 +427,7 @@ id | Integer | An Identifier for the message. This is used when delivering recei
 
 ## Other channels (WeChat, Facebook Messenger and Telegram)
 
-> url
+> URL
 
 ```
   https://ongair.im/api/v1/base/send
@@ -385,6 +436,14 @@ id | Integer | An Identifier for the message. This is used when delivering recei
 ### Method
 
 POST
+
+```shell
+curl -X POST "https://ongair.im/api/v1/base/send" \
+  -d external_id=87654321 \
+  -d text="Hello World!" \
+  -d thread=false // optional \
+  -d token=<enter_token_here>
+```
 
 ### Message Params
 
@@ -438,6 +497,15 @@ Method sends a image message to a single recipient
 
 POST
 
+```shell
+curl -X POST "https://ongair.im/api/v1/base/send_image" \
+  -d phone_number=12345678 \
+  -d image="http://127.0.0.1:4567/images/ongair_logo.png" \
+  -d caption="image for api" // optional \
+  -d content_type="image/jpg"
+  -d token=<enter_token_here>
+```
+
 ## Params
 
 Field | Type | Mandatory | Format | Meaning 
@@ -485,6 +553,12 @@ Method sends a text message to a group
 ## Method
 
 POST
+
+```shell
+curl -X POST "https://ongair.im/api/v1/base/groups/{id}/send_message" \
+  -d text="Hello Group" \
+  -d token=<enter_token_here>
+```
 
 ## Params
 
@@ -534,6 +608,17 @@ Method sends a VCard to a single recipient
 ## Method
 
 POST
+
+```shell
+curl -X POST "https://ongair.im/api/v1/base/send_contact" \
+  -d phone_number=87654321 \
+  -d first_name=xxxxxxxx \
+  -d last_name=xxxxxxxxxx \
+  -d email=john@doe.ai \
+  -d contact_number[0]=1234567890 \
+  -d contact_number[1]=1234567890 \
+  -d token=<enter_token_here>
+```
 
 ## Params
 
@@ -706,10 +791,20 @@ JSON
 https://ongair.im/api/v1/search/messages.json
 ```
 
+```shell
+curl -X GET -H "accept: application/json" "https://ongair.im/api/v1/search/messages.json" \
+  -d token=<enter_token_here>
+```
+
 ```
 XML
 
 https://ongair.im/api/v1/search/messages.xml
+```
+
+```shell
+curl -X GET -H "accept: application/xml" "https://ongair.im/api/v1/search/messages.xml" \
+  -d token=<enter_token_here>
 ```
 
 ### Method
@@ -775,18 +870,32 @@ GET
 
 ## Contacts
 
-> This API is available in both JSON and XML formats
-
-> JSON
+<aside class="notice">
+This API is available in both JSON and XML formats
+</aside>
 
 ```
+  JSON
+
   https://app.ongair.im/api/v1/search/contacts.json
 ```
 
-> XML
+```shell
+curl -X GET "accept: application/json" "https://app.ongair.im/api/v1/search/contacts.json" \
+  -d token=<enter_token_here>
+```
+
 
 ```
+  XML
+
   https://app.ongair.im/api/v1/search/contacts.xml
+```
+
+
+```shell
+curl -X GET "accept: application/xml" "https://app.ongair.im/api/v1/search/contacts.xml" \
+  -d token=<enter_token_here>
 ```
 
 ### Method
@@ -852,6 +961,14 @@ Method sends a broadcast text message to recipients in a list. Use this to send 
 
 You need to have created a list in advance.
 
+```shell
+  curl "https://ongair.im/api/v1/base/lists/{id}/send_message" \
+    -d id=5 \
+    -d text="Hello List" \
+    -d thread=false // optional \
+    -d token=<enter_token_here>
+```
+
 ## Params
 
 Field | Type | Mandatory | Format | Meaning 
@@ -874,6 +991,13 @@ This lets you look up whether a phone number is register on WhatsApp or not. Thi
 
 POST
 
+```shell
+curl -X POST "https://ongair.im/api/v1/search/sync" \
+  -d phone_number=1234567890 \
+  -d name=xxxxxxxx \
+  -d token=<enter_token_here>
+```
+
 ## Params
 
 Field | Type | Mandatory | Format | Meaning 
@@ -889,6 +1013,14 @@ Field | Type | Mandatory | Format | Meaning
 ------|------|-----------|--------|-------------------
 phone_numbers[0] | String | Yes | (country code)(phone number) e.g. 254722200201 | The contact phone number
 phone_numbers[1] | String | Yes | (country code)(phone number) | The contact phone number
+
+```shell
+curl -X POST "https://ongair.im/api/v1/search/sync" \
+  -d phone_number[0]=1234567890 \
+  -d phone_number[1]=1234567890 \
+  -d phone_number[2]=1234567890 \
+  -d token=<enter_token_here>
+```
 
 ## Response
 
