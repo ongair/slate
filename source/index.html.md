@@ -269,7 +269,8 @@ This function returns the contacts that belong to a specific group.
 GET
 
 ```shell
-  curl -X GET "https://ongair.im/api/v1/base/groups/{id}/members"
+  curl -X GET "https://ongair.im/api/v1/base/groups/{id}/members" \
+    -d token=<enter_token_here>
 ```
 
 ## Params
@@ -333,7 +334,7 @@ POST
 
 ```shell
 curl -X POST "https://ongair.im/api/v1/base/groups/{id}/remove_participant" \
-  -d phone_number=12345678
+  -d phone_number=12345678 \
   -d token=<enter_token_here>
 ```
 
@@ -384,7 +385,7 @@ POST
 curl -X POST "https://ongair.im/api/v1/base/send" \
   -d phone_number=12345678 \
   -d text="Hey" \
-  -d thread=true // optional
+  -d thread=true // optional \
   -d token=<enter_token_here>
 ```
 
@@ -502,7 +503,7 @@ curl -X POST "https://ongair.im/api/v1/base/send_image" \
   -d phone_number=12345678 \
   -d image="http://127.0.0.1:4567/images/ongair_logo.png" \
   -d caption="image for api" // optional \
-  -d content_type="image/jpg"
+  -d content_type="image/jpg" \
   -d token=<enter_token_here>
 ```
 
