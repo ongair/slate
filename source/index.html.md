@@ -108,268 +108,12 @@ phone_number | String | Phone number on which the account is registered
 status_message | String | The current whatsapp status message
 online | boolean | True or false as to whether the whatsapp account is currently online
 
-# Create a Contact
 
-Sets up a contact in the contacts database. This acts as an opt-in before messages can be sent.
 
-> URL
+# Sending References
 
-```
-  https://ongair.im/api/v1/base/create_contact
-```
-
-## Method
-
-POST
-
-```shell
-  curl -X POST "https://ongair.im/api/v1/base/create_contact" \
-    -d phone_number=12345678 \
-    -d name=xxxxxxx \
-    -d token=<enter_token_here>
-```
-
-## Contact Params
-
-Field | Type | Mandatory | Format | Meaning 
-------|------|-----------|--------|-------------
-phone_number | String | Yes | (country code)(phone number) e.g. 254722200200 | The contact phone number
-name | String | Yes | Utf8 only encoded strings | The contact name
-
-## Response
-
-> The server responds with a JSON message:
-
-```json
-  {
-    "created":true,"id":2067
-  }
-```
-
-# Create a Group
-
-Creates a group. This call is asynchronous. This means that the group will not be ready until your client receives a ‘GroupCreated’ notification from the API.
-
-> URL
-
-```
-  https://ongair.im/api/v1/base/create_group
-```
-
-## Method
-
-POST
-
-> Example
-
-```shell
-curl "https://ongair.im/api/v1/base/create_group" \
-  -d name=GroupName \
-  -d members[]=254722200200 \
-  -d members[]=254722201201 \
-  -d token=YOUR_API_TOKEN”
-```
-
-## Group Params
-
-Field | Type | Mandatory | Format | Meaning 
-------|------|-----------|--------|-------------
-name | String | Yes | Utf8 only encoded strings | The group subject name
-Members | Array | Yes | Utf8 only encoded strings | The phone number of the members to be added to the group
-
-## Response
-
-> The server responds with a JSON message
-
-```
-  {"created":true,"id":2067}
-```
-
-## Error
-
-> If there is an error or the group name already exists, the server returns an error message and response code of 422.
-
-```
-  {"error":"Group with the name ‘test’ already exists"}
-```
-
-## Callback
-
-This is a web hook posted to the client when the group is ready. This callback is usually a second or two after the original call.
-
-Field | Type | Value | Meaning  
-------|------|-------|----------------
-notification_type | String | GroupCreated | The type of the notification
-name | String | Cooking Class | The name of the group
-id | Integer | 2067 | The identifier of the group. This is the same id returned when the create group was sent.
-
-
-
-# Add Participants to an existing Group
-
-This adds participants to an existing group.
-
-> URL
-
-```
-  https://ongair.im/api/v1/base/groups/{id}/add_participants
-```
-
-## Method
-
-POST
-
-```shell
-curl -X POST "https://ongair.im/api/v1/base/groups/{id}/add_participants" \
-  -d members[]=12345678 \
-  -d members[]=12345678 \
-  -d members[]=12345678 \
-  -d token=<enter_token_here>
-```
-
-## Params
-
-Field | Type | Mandatory | Format | Meaning
-------|------|-----------|--------|-----------------
-id | Integer | Yes | Utf8 only encoded strings | The group id as returned from the group created call
-Members | Array | Yes | Utf8 only encoded strings | The phone number of the members to be added to the group
-
-## Response
-
-> The server responds with a JSON message
-
-```json
-  {
-    "added": true 
-  }
-```
-
-## Error
-
-> If there is an error, the server returns an error message and response code of 422.
-
-```json
-  {
-    "error":"Group with the name ‘test’ already exists"
-  }
-```
-
-# Get Group Members
-
-This function returns the contacts that belong to a specific group.
-
-> URL
-
-```
-  https://ongair.im/api/v1/base/groups/{id}/members
-```
-
-## Method
-
-GET
-
-```shell
-  curl -X GET "https://ongair.im/api/v1/base/groups/{id}/members" \
-    -d token=<enter_token_here>
-```
-
-## Params
-
-Field | Type | Mandatory | Format | Meaning 
-------|------|-----------|--------|------------
-Id | Integer | Yes | Utf8 only encoded strings | The group id as returned from the group created call
-
-## Response
-
-> The server responds with a JSON message:
-
-```json
-  {
-    "id": 19,
-    "name": "test to add",
-    "contacts": [
-        {
-            "id": 1596,
-            "name": "254733171036",
-            "phone_number": "254733171036"
-        },
-        {
-            "id": 1597,
-            "name": "Kimenye Trevor",
-            "phone_number": "254705866564"
-        }
-    ]
-  }
-```
-
-Field | Type | Meaning  
-------|------|----------------
-id | Integer | The id of the group
-name | String | The name of the group
-Contacts | Array | An array of the members of the group. For each member, the id, name and phone_number are provided
-
-## Error
-
-> If there is an error, the server returns an error message and response code of 422
-
-```json
-  {
-    "error": "No group with id ‘2’ exists"
-  }
-```
-
-# Remove Participant from a Group
-
-This removes a participant from a group from which the Ongair hosted account is an administrator.
-
-> URL
-
-```
-  https://ongair.im/api/v1/base/groups/{id}/remove_participant
-```
-
-## Method
-
-POST
-
-```shell
-curl -X POST "https://ongair.im/api/v1/base/groups/{id}/remove_participant" \
-  -d phone_number=12345678 \
-  -d token=<enter_token_here>
-```
-
-## Params
-
-Field | Type | Mandatory | Format | Meaning 
-------|------|-----------|--------|-------------
-id | Integer | Yes | Utf8 only encoded strings | The group id as returned from the group created call
-phone_number | String | Yes | (country code)(phone number) e.g. 254722200200 | The contact phone number
-
-## Response
-
-> The server responds with a JSON message:
-
-```json
-  {
-    "removed": true 
-  }
-```
-
-## Error
-
-> If there is an error, the server returns an error message and response code of 422.
-
-```json
-  {
-    "error":"Contact with the phone number ‘254722200200’ is not a member of the group"
-  }
-```
-
-# Send a Message
-
-Method sends a text message to a single recipient. Please note that there is a slight difference in how you send messages to WhatsApp compared to other channels like WeChat, Facebook Messenger and Telegram.
-
-## WhatsApp
+## Send Message
+Method sends a text message to a single recipient. Channels supported WeChat, Facebook Messenger and Telegram.
 
 > URL
 
@@ -383,7 +127,7 @@ POST
 
 ```shell
 curl -X POST "https://ongair.im/api/v1/base/send" \
-  -d phone_number=12345678 \
+  -d external_id=12345678 \
   -d text="Hey" \
   -d thread=true // optional \
   -d token=<enter_token_here>
@@ -393,63 +137,6 @@ curl -X POST "https://ongair.im/api/v1/base/send" \
 
 Field | Type | Mandatory | Format | Meaning 
 ------|------|-----------|--------|--------------
-phone_number | String | Yes | (country code)(phone number) e.g. 254722200200 | Phone number to send to
-text | String | Yes | Utf8 only encoded strings | The message to be sent
-thread | Boolean | No | true/false | Whether the response should be in a conversation thread with the original message
-
-
-### Response
-
-> The server responds with a JSON message:
-
-```json
-  {
-    "sent":true,
-    "id":2067
-  }
-```
-
-Field | Type | Meaning  
-------|------|------------
-sent | Boolean | True or False if the image
-id | Integer | An Identifier for the message. This is used when delivering receipts
-
-> At this stage, the message has been sent to the WhatsApp server for delivery.
-
-### Error
-
-> If there is an error or the phone number does not exist, the server returns an error message and response code of 422.
-
-```json
-  {
-    "error":"Contact with phone number 25470586564 does not exists"
-  }
-```
-
-## Other channels (WeChat, Facebook Messenger and Telegram)
-
-> URL
-
-```
-  https://ongair.im/api/v1/base/send
-```
-
-### Method
-
-POST
-
-```shell
-curl -X POST "https://ongair.im/api/v1/base/send" \
-  -d external_id=87654321 \
-  -d text="Hello World!" \
-  -d thread=false // optional \
-  -d token=<enter_token_here>
-```
-
-### Message Params
-
-Field | Type | Mandatory | Format | Meaning 
-------|------|-----------|--------|-------------
 external_id | String | Yes | 123455677 | User ID of the recipient*
 text | String | Yes | Utf8 only encoded strings | The message to be sent
 thread | Boolean | No | true/false | Whether the response should be in a conversation thread with the original message
@@ -476,17 +163,20 @@ id | Integer | An Identifier for the message. This is used when delivering recei
 
 ### Error
 
-> If there is an error or the phone number does not exist, the server returns an error message and response code of 422.
+<aside class="warning">
+  If there is an error or the external id does not exist, the server returns an error message and response code of 422.
+</aside>
 
 ```json
   {
-    "error":"Contact with phone number 123455677 does not exists"
+    "error":"Contact with external_id 123455677 does not exists"
   }
 ```
 
-# Send an Image
 
-Method sends a image message to a single recipient
+## Send Image
+
+Method sends a image message to a single recipient. Channels supported WeChat, Facebook Messenger and Telegram.
 
 > URL
 
@@ -494,29 +184,29 @@ Method sends a image message to a single recipient
   https://ongair.im/api/v1/base/send_image
 ```
 
-## Method
+### Method
 
 POST
 
 ```shell
 curl -X POST "https://ongair.im/api/v1/base/send_image" \
-  -d phone_number=12345678 \
+  -d external_id=12345678 \
   -d image="http://127.0.0.1:4567/images/ongair_logo.png" \
   -d caption="image for api" // optional \
   -d content_type="image/jpg" \
   -d token=<enter_token_here>
 ```
 
-## Params
+### Params
 
 Field | Type | Mandatory | Format | Meaning 
 ------|------|-----------|--------|------------
-phone_number | String | Yes | (country code)(phone number) e.g. 254722200200 | Phone number to send to
+external_id | String | Yes | 123455677 | User ID of the recipient*
 image | String/File | Yes | Either the URL of the image (must be publicly accessible) or the image uploaded | The image to be sent
 Caption | String | No | The caption for the image | A brief text to accompany the image
 content_type | String | Yes | image/file_extension_here eg image/jpg or /image/png etc. | The content type of the image file you want to send
 
-## Response
+### Response
 
 > The server responds with a JSON message:
 
@@ -532,107 +222,53 @@ sent | Boolean | True or False if the image
 id | Integer | An Identifier for the message. This is used when delivering receipts
 
 
-## Error
-
-> If there is an error or the phone number does not exist, the server returns an error message and response code of 422.
-
-```json
-  {
-    "error":"Contact with phone number 25470586564 does not exists"
-  }
-```
-
-# Send a Group Message
-
-Method sends a text message to a group
-> URL
-
-```
-  https://ongair.im/api/v1/base/groups/{id}/send_message
-```
-
-## Method
-
-POST
-
-```shell
-curl -X POST "https://ongair.im/api/v1/base/groups/{id}/send_message" \
-  -d text="Hello Group" \
-  -d token=<enter_token_here>
-```
-
-## Params
-
-Field | Type | Mandatory | Format | Meaning 
-------|------|-----------|--------|-------------
-text | String | Yes | Utf8 only encoded strings | The message to be sent
-
-
-## Response
-
-> The server responds with a JSON message:
+### Error
+<aside class="warning">
+  If there is an error or the external id does not exist, the server returns an error message and response code of 422.
+</aside>
 
 ```json
   {
-    "sent":true,
-    "id":2067
+    "error":"Contact with external_id 25470586564 does not exists"
   }
 ```
 
-Field | Type | Meaning
-------|------|-----------------
-sent | Boolean | True or False if the image
-id | Integer | An Identifier for the message. No receipts are provided for group messages
 
-# Receipts
 
-This is a notification from the API when the message has been delivered to the client’s device. It takes the form of a HTTP POST to the specified URL with the following parameters.
+## Send Audio
 
-Field | Type | Value | Meaning  
-------|------|-------|------------------
-notification_type | String |  DeliveryReceipt | The type of the notification
-phone_number | String | (country code)(phone number) e.g. 254722200200 | Phone number to send to
-Id | Integer | 2067 | The identifier of the message. This is the same id returned when the message was sent.
-
-The client should respond with a HTTP status code of 200. The response body is ignored.
-
-# Send Contact
-
-Method sends a VCard to a single recipient
+Method sends a audio message to a single recipient. Channels supported WeChat, Facebook Messenger and Telegram.
 
 > URL
 
 ```
-  https://ongair.im/api/v1/base/send_contact
+  https://ongair.im/api/v1/base/send_audio
 ```
 
-## Method
+### Method
 
 POST
 
 ```shell
-curl -X POST "https://ongair.im/api/v1/base/send_contact" \
-  -d phone_number=87654321 \
-  -d first_name=xxxxxxxx \
-  -d last_name=xxxxxxxxxx \
-  -d email=john@doe.ai \
-  -d contact_number[0]=1234567890 \
-  -d contact_number[1]=1234567890 \
+curl -X POST "https://ongair.im/api/v1/base/send_image" \
+  -d external_id=12345678 \
+  -d image="http://127.0.0.1:4567/images/ongair.mp3" \
+  -d caption="audio for api" // optional \
+  -d content_type="audio/mp3" \
   -d token=<enter_token_here>
 ```
 
-## Params
+### Params
 
 Field | Type | Mandatory | Format | Meaning 
 ------|------|-----------|--------|------------
-phone_number | String | Yes | (country code)(phone number) e.g. 254722200200 | Phone number to send to
-first_name | String | Yes | Utf8 only encoded strings | The first name of the contact
-last_name | String | No | Utf8 only encoded strings | The last name of the contact
-email | String | No | Utf8 only encoded strings | The email address of the contact
-contact_number[0] | String | Yes | (country code)(phone number) e.g. 254722200200 | The primary contact to be sent
-contact_number[x] | String | No | (country code)(phone number) e.g. 254722200200 | You can send as many phone numbers as you like by creating an array of contact numbers. e.g. contact_number[1] = 254722123456, contact_number[2] = 254722098765
+external_id | String | Yes | 123455677 | User ID of the recipient*
+audio | String/File | Yes | Either the URL of the audio (must be publicly accessible) or the audio uploaded | The audio to be sent
+Caption | String | No | The caption for the audio | A brief text to accompany the audio
+content_type | String | Yes | audio/file_extension_here eg audio/mp3 or audio/ogg etc. | The content type of the audio file you want to send
 
-## Response
+
+### Response
 
 > The server responds with a JSON message:
 
@@ -644,22 +280,167 @@ contact_number[x] | String | No | (country code)(phone number) e.g. 254722200200
 ```
 
 Field | Type | Meaning  
-------|------|-----------------
-sent | Boolean | True or False if the contact was sent
+------|------|-------------
+sent | Boolean | True or False if the audio
 id | Integer | An Identifier for the message. This is used when delivering receipts
 
 
-## Error
-
-> If there is an error or the phone number does not exist, the server returns an error message and response code of 422.
+### Error
+<aside class="warning">
+  If there is an error or the external id does not exist, the server returns an error message and response code of 422.
+</aside>
 
 ```json
   {
-    "error":"Contact with phone number 25470586564 does not exists"
+    "error":"Contact with external_id 25470586564 does not exists"
   }
 ```
 
-# Contact Received
+
+
+## Send Video
+
+Method sends a video message to a single recipient. Channels supported Facebook Messenger.
+
+> URL
+
+```
+  https://ongair.im/api/v1/base/send_video
+```
+
+### Method
+
+POST
+
+```shell
+curl -X POST "https://ongair.im/api/v1/base/send_image" \
+  -d external_id=12345678 \
+  -d video="http://127.0.0.1:4567/images/ongair.mp4" \
+  -d caption="video for api" // optional \
+  -d content_type="video/mp4" \
+  -d token=<enter_token_here>
+```
+
+### Params
+
+Field | Type | Mandatory | Format | Meaning 
+------|------|-----------|--------|------------
+external_id | String | Yes | 123455677 | User ID of the recipient*
+video | String/File | Yes | Either the URL of the video (must be publicly accessible) or the video uploaded | The video to be sent
+Caption | String | No | The caption for the video | A brief text to accompany the video
+content_type | String | Yes | video/file_extension_here eg video/mp4 etc. | The content type of the video file you want to send
+
+
+### Response
+
+> The server responds with a JSON message:
+
+```json
+  {
+    "sent":true,
+    "id":2067
+  }
+```
+
+Field | Type | Meaning  
+------|------|-------------
+sent | Boolean | True or False if the video
+id | Integer | An Identifier for the message. This is used when delivering receipts
+
+
+### Error
+<aside class="warning">
+  If there is an error or the external id does not exist, the server returns an error message and response code of 422.
+</aside>
+
+```json
+  {
+    "error":"Contact with external_id 25470586564 does not exists"
+  }
+```
+
+
+
+## Sending Broadcast
+
+Method sends a broadcast text message to recipients in a list. Use this to send the same message to multiple recipients.
+
+> URL
+
+```
+  https://ongair.im/api/v1/base/lists/:id/send_message
+```
+
+### Method
+
+You need to have created a list in advance.
+
+```shell
+  curl "https://ongair.im/api/v1/base/lists/{id}/send_message" \
+    -d id=5 \
+    -d text="Hello List" \
+    -d thread=false // optional \
+    -d token=<enter_token_here>
+```
+
+### Params
+
+Field | Type | Mandatory | Format | Meaning 
+------|------|-----------|--------|----------------
+id | Integer | Yes | 5 | List to send to
+text | String | Yes | Utf8 only encoded strings | The message to be sent
+thread | Boolean | No | true/false | Whether the response should be in a conversation thread with the original message
+
+
+
+## Send Location
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Received References
+
+## Message Received
+
+This is a notification from the API when a message is received at the Ongair hosted account. It takes the form of a HTTP POST to the specified URL with the following parameters:
+
+Field | Type | Value | Meaning  
+------|------|-------|-----------------
+notification_type | String | MessageReceived | The type of the notification
+phone_number | String | (country code)(phone number) e.g. 254722200200 | Phone number that sent the message
+text | String | Hello world | The message text that was received
+account | String | 254722123456 | Your WhatsApp account number
+
+The client should respond with a HTTP status code of 200. The response body is ignored.
+
+## Image Received
+
+This is a notification from the API when an image is received at the Ongair hosted account. It takes the form of a HTTP POST to the specified URL with the following parameters:
+
+Field | Type | Value | Meaning  
+------|------|-------|------------------
+notification_type | String | ImageReceived | The type of the notification
+phone_number | String | (country code)(phone number) e.g. 254722200200 | Phone number that sent the message
+image | String | http://…/ | The url to the image that was sent.
+account | String | 254722123456 | Your WhatsApp account number
+
+The client should respond with a HTTP status code of 200. The response body is ignored.
+
+## Contact Received
 
 This is a notification from the API when a contact is received at the Ongair hosted account. It takes the form of a HTTP POST to the specified URL with the following parameters:
 
@@ -670,7 +451,7 @@ phone_number | String | (country code)(phone number) e.g. 254722200200 | Phone n
 contact_phone_number | String | 0706866564 | The phone number as was parsed from the vcard
 account | String | 254722123456 | Your WhatsApp account number
 
-# Location Received
+## Location Received
 
 This is a notification from the API when a location is received at the Ongair hosted account. It takes the form of a HTTP POST to the specified URL with the following parameters:
 
@@ -684,95 +465,23 @@ longitude | Float 36.8772923 for example for Mombasa Road | Longitude of the loc
 
 The client should respond with a HTTP status code of 200. The response body is ignored.
 
-# Message Received
 
-This is a notification from the API when a message is received at the Ongair hosted account. It takes the form of a HTTP POST to the specified URL with the following parameters:
 
-Field | Type | Value | Meaning  
-------|------|-------|-----------------
-notification_type | String | MessageReceived | The type of the notification
-phone_number | String | (country code)(phone number) e.g. 254722200200 | Phone number that sent the message
-text | String | Hello world | The message text that was received
-account | String | 254722123456 | Your WhatsApp account number
 
-The client should respond with a HTTP status code of 200. The response body is ignored.
 
-# Group Message Received
 
-This is a notification from the API when a message is received at a group to which the Ongair hosted account belongs. It takes the form of a HTTP POST to the specified URL with the following parameters:
 
-Field | Type | Value | Meaning  
-------|------|-------|---------------
-notification_type | String | GroupMessageReceived | The type of the notification
-phone_number | String | (country code)(phone number) e.g. 254722200200 | Phone number that sent the message
-group_id | Integer | 18 | The id of the group
-text | String | Hello world | The message text that was received
-account | String | 254722123456 | Your WhatsApp account number
 
-The client should respond with a HTTP status code of 200. The response body is ignored.
 
-# Image Received
 
-This is a notification from the API when an image is received at the Ongair hosted account. It takes the form of a HTTP POST to the specified URL with the following parameters:
 
-Field | Type | Value | Meaning  
-------|------|-------|------------------
-notification_type | String | ImageReceived | The type of the notification
-phone_number | String | (country code)(phone number) e.g. 254722200200 | Phone number that sent the message
-image | String | http://…/ | The url to the image that was sent.
-account | String | 254722123456 | Your WhatsApp account number
 
-The client should respond with a HTTP status code of 200. The response body is ignored.
 
-# Added a Group Notification
 
-This is a notification from the API when an Ongair hosted account is added to a group. It takes the form of a HTTP POST to the specified URL with the following parameters:
 
-Field | Type | Value | Meaning  
-------|------|-------|--------------
-group_id | Integer | 27 | The id of the group
-notification_type | String | AddedToGroup | The type of the notification
-account | String | 254722123456 | Your WhatsApp account number
 
-The client should respond with a HTTP status code of 200. The response body is ignored.
 
-# Removed a Group Notification
 
-This is a notification from the API when an Ongair hosted account is removed from a group. It takes the form of a HTTP POST to the specified URL with the following parameters:
-
-Field | Type | Value | Meaning  
-------|------|-------|-------------
-group_id | Integer | 27 | The id of the group
-notification_type | String | RemovedFromGroup | The type of the notification
-account | String | 254722123456 | Your WhatsApp account number
-
-The client should respond with a HTTP status code of 200. The response body is ignored.
-
-# Contact Added to Group
-
-This is a notification from the API when a contact is added to a group, in which the Ongair hosted account is a member. In this case the group administrator is not the Ongair account.
-
-Field | Type | Value | Meaning  
-------|------|-------|------------
-notification_type | String | ContactAddedToGroup | The type of the notification
-group_id | Integer | 12 | The id of the group
-phone_number | String | (country code)(phone number) e.g. 254722200200 | The phone number of the contact that was added to the group
-account | String | 254722123456 | Your WhatsApp account number
-
-The client should respond with a HTTP status code of 200. The response body is ignored.
-
-# Contact Removed from Group
-
-This is a notification from the API when a contact is removed from a group, in which the Ongair hosted account is a member. In this case the group administrator is not the Ongair account.
-
-Field | Type | Value | Meaning  
-------|------|-------|------------
-notification_type | String | ContactRemovedFromGroup | The type of the notification
-group_id | Integer | 12 | The id of the group
-phone_number | String | (country code)(phone number) e.g. 254722200200 | The phone number of the contact that was removed from the group
-account | String | 254722123456 | Your WhatsApp account number
-
-The client should respond with a HTTP status code of 200. The response body is ignored.
 
 # Search
 
@@ -948,6 +657,103 @@ GET
 </contacts>
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Create a Contact
+
+Sets up a contact in the contacts database. This acts as an opt-in before messages can be sent.
+
+> URL
+
+```
+  https://ongair.im/api/v1/base/create_contact
+```
+
+## Method
+
+POST
+
+```shell
+  curl -X POST "https://ongair.im/api/v1/base/create_contact" \
+    -d phone_number=12345678 \
+    -d name=xxxxxxx \
+    -d token=<enter_token_here>
+```
+
+## Contact Params
+
+Field | Type | Mandatory | Format | Meaning 
+------|------|-----------|--------|-------------
+phone_number | String | Yes | (country code)(phone number) e.g. 254722200200 | The contact phone number
+name | String | Yes | Utf8 only encoded strings | The contact name
+
+## Response
+
+> The server responds with a JSON message:
+
+```json
+  {
+    "created":true,"id":2067
+  }
+```
+
+> At this stage, the message has been sent to the WhatsApp server for delivery.
+
+### Error
+
+> If there is an error or the phone number does not exist, the server returns an error message and response code of 422.
+
+```json
+  {
+    "error":"Contact with phone number 25470586564 does not exists"
+  }
+```
+
+
+
+
+
+
+
+
+
 # Sending Broadcast
 
 Method sends a broadcast text message to recipients in a list. Use this to send the same message to multiple recipients.
@@ -978,80 +784,6 @@ id | Integer | Yes | 5 | List to send to
 text | String | Yes | Utf8 only encoded strings | The message to be sent
 thread | Boolean | No | true/false | Whether the response should be in a conversation thread with the original message
 
-# Sync
-
-This lets you look up whether a phone number is register on WhatsApp or not. This is handled asynchronously and a response of type SyncResult is sent to your server.
-
-> URL
-
-```
-  https://ongair.im/api/v1/search/sync
-```
-
-## Method
-
-POST
-
-```shell
-curl -X POST "https://ongair.im/api/v1/search/sync" \
-  -d phone_number=1234567890 \
-  -d name=xxxxxxxx \
-  -d token=<enter_token_here>
-```
-
-## Params
-
-Field | Type | Mandatory | Format | Meaning 
-------|------|-----------|--------|------------
-phone_number | String | Yes | (country code)(phone number) e.g. 254722200200 | The contact phone number
-name | String | Yes | Utf8 only encoded strings | The contact name
-
-## Batch
-
-You may also send this method in batch by providing an array of phone numbers (upto 10 per call).
-
-Field | Type | Mandatory | Format | Meaning
-------|------|-----------|--------|-------------------
-phone_numbers[0] | String | Yes | (country code)(phone number) e.g. 254722200201 | The contact phone number
-phone_numbers[1] | String | Yes | (country code)(phone number) | The contact phone number
-
-```shell
-curl -X POST "https://ongair.im/api/v1/search/sync" \
-  -d phone_number[0]=1234567890 \
-  -d phone_number[1]=1234567890 \
-  -d phone_number[2]=1234567890 \
-  -d token=<enter_token_here>
-```
-
-## Response
-
-> The server responds with a JSON message:
-
-```json
-  { 
-    "requested": true 
-  }
-```
-
-## Error
-
-> This occurs when the phone_number parameteter is not included in the request\
-
-```json
-  {
-    "error": "No phone number was provided" 
-  }
-```
-
-## Callback
-
-This is a web hook posted to the client when the phone number look up returns a response. This callback is usually a second or two after the original call.
-
-Field | Type | Value | Meaning
-------|------|-------|-------------------
-notification_type | String | SyncResult | The type of the notification
-registered | Array | ["254722123456", "254722123457"] | An array of numbers that were found to be registered on WhatsApp.
-unregistered | Array | ["254722123458", "254722123459"] | An array of numbers that were found not to be registered on WhatsApp.
 
 
 
