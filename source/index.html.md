@@ -393,10 +393,6 @@ thread | Boolean | No | true/false | Whether the response should be in a convers
 
 
 
-## Send Location
-
-
-
 
 
 
