@@ -184,8 +184,6 @@ content_type | String | Yes | image/file_extension_here eg image/jpg or /image/p
 
 ### Response
 
-> The server responds with a JSON message:
-
 ```json
   {
     "sent":true,"id":2067
