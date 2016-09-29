@@ -2,7 +2,9 @@
 title: Ongair for Developers
 
 language_tabs:
-  - shell: cURL  
+  - shell: cURL
+  - ruby: Ruby
+  - php: PHP
 
 toc_footers:
   - <a href='https://ongair.im/users/sign_up'>Sign Up for an Account</a>
@@ -24,43 +26,24 @@ This API allows you to send and receive:
 
 If you have any questions feel free to contact us at [dev@ongair.im](mailto:dev@ongair.im)
 
-## Enable the API
+
+## Enable API
 
 Go to **settings** > **Account** and tick enable.
 
-# Security
+## Security
 
-## URL
-
-Depending on the environment where you account has been set up, use the correct prefix.
+### URL
 
 * [https://ongair.im](https://ongair.im)
-* [https://beta.ongair.im](https://beta.ongair.im)
 
 All requests must have the authentication token in the header or within the URL parameters. The first option is preferred.
 
-## Option 1
-
-Header | Values
--------|--------
-Accept | application/json
-Authorization | Token token="enter_token_here”
-
-## Option 2
-
-> URL
-
 ```
-  https://ongair.im/api/v1/base/status?token=<enter_token_here>
+  https://ongair.im/api/v1/base/#{method}?token=<enter_token_here>
 ```
 
-```shell
-  curl "https://ongair.im/api/v1/base/status" \
-  -h "Content-Type' => 'application/json" \
-  -d token=<enter_token_here>
-```
-
-## Authentication Error
+### Authentication Error
 
 In the event of an authentication error .e.g. no token is provided or an invalid token is provided then the result is a 401 error code with the response:
 
@@ -70,26 +53,24 @@ In the event of an authentication error .e.g. no token is provided or an invalid
   }
 ```
 
-# Status
+## Status
 
 Status Method returns a health check of the system.
-
-> URL
 
 ```
   https://ongair.im/api/v1/base/status?token=<enter_token_here>
 ```
 
-## Method
+### Method
 
 GET
 
-```shell
+```curl
   curl -X GET "https://ongair.im/api/v1/base/status" \
     -d token=<enter_token_here>
 ```
 
-## Response
+### Response
 
 > It returns the following json:
 
@@ -109,13 +90,11 @@ status_message | String | The current whatsapp status message
 online | boolean | True or false as to whether the whatsapp account is currently online
 
 
-
 # Sending References
 
-## Send Message
-Method sends a text message to a single recipient. Channels supported WeChat, Facebook Messenger and Telegram.
+## Text Message
 
-> URL
+Method sends a text message to a single recipient. Channels supported WeChat, Facebook Messenger and Telegram.
 
 ```
   https://ongair.im/api/v1/base/send
@@ -173,12 +152,9 @@ id | Integer | An Identifier for the message. This is used when delivering recei
   }
 ```
 
-
-## Send Image
+## Image
 
 Method sends a image message to a single recipient. Channels supported WeChat, Facebook Messenger and Telegram.
-
-> URL
 
 ```
   https://ongair.im/api/v1/base/send_image
@@ -234,12 +210,9 @@ id | Integer | An Identifier for the message. This is used when delivering recei
 ```
 
 
-
-## Send Audio
+## Audio
 
 Method sends a audio message to a single recipient. Channels supported WeChat, Facebook Messenger and Telegram.
-
-> URL
 
 ```
   https://ongair.im/api/v1/base/send_audio
@@ -270,8 +243,6 @@ content_type | String | Yes | audio/file_extension_here eg audio/mp3 or audio/og
 
 ### Response
 
-> The server responds with a JSON message:
-
 ```json
   {
     "sent":true,
@@ -286,6 +257,7 @@ id | Integer | An Identifier for the message. This is used when delivering recei
 
 
 ### Error
+
 <aside class="warning">
   If there is an error or the external id does not exist, the server returns an error message and response code of 422.
 </aside>
@@ -296,13 +268,9 @@ id | Integer | An Identifier for the message. This is used when delivering recei
   }
 ```
 
-
-
-## Send Video
+## Video
 
 Method sends a video message to a single recipient. Channels supported Facebook Messenger.
-
-> URL
 
 ```
   https://ongair.im/api/v1/base/send_video
@@ -330,10 +298,7 @@ video | String/File | Yes | Either the URL of the video (must be publicly access
 Caption | String | No | The caption for the video | A brief text to accompany the video
 content_type | String | Yes | video/file_extension_here eg video/mp4 etc. | The content type of the video file you want to send
 
-
 ### Response
-
-> The server responds with a JSON message:
 
 ```json
   {
@@ -347,8 +312,8 @@ Field | Type | Meaning
 sent | Boolean | True or False if the video
 id | Integer | An Identifier for the message. This is used when delivering receipts
 
-
 ### Error
+
 <aside class="warning">
   If there is an error or the external id does not exist, the server returns an error message and response code of 422.
 </aside>
@@ -359,56 +324,9 @@ id | Integer | An Identifier for the message. This is used when delivering recei
   }
 ```
 
+## Broadcast
 
-
-## Sending Broadcast
-
-Method sends a broadcast text message to recipients in a list. Use this to send the same message to multiple recipients.
-
-> URL
-
-```
-  https://ongair.im/api/v1/base/lists/:id/send_message
-```
-
-### Method
-
-You need to have created a list in advance.
-
-```shell
-  curl "https://ongair.im/api/v1/base/lists/{id}/send_message" \
-    -d id=5 \
-    -d text="Hello List" \
-    -d thread=false // optional \
-    -d token=<enter_token_here>
-```
-
-### Params
-
-Field | Type | Mandatory | Format | Meaning 
-------|------|-----------|--------|----------------
-id | Integer | Yes | 5 | List to send to
-text | String | Yes | Utf8 only encoded strings | The message to be sent
-thread | Boolean | No | true/false | Whether the response should be in a conversation thread with the original message
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Received References
+# Receiving References
 
 ## Message Received
 
@@ -461,31 +379,11 @@ longitude | Float 36.8772923 for example for Mombasa Road | Longitude of the loc
 
 The client should respond with a HTTP status code of 200. The response body is ignored.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Search
 
 This returns a list of records for whatever resource you are querying for e.g. messages or contacts.
 
 ## Messages
-
-> URL
 
 <aside class="notice">
 This API is available in both JSON and XML formats
@@ -652,53 +550,3 @@ GET
     </contact>
 </contacts>
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Sending Broadcast
-
-Method sends a broadcast text message to recipients in a list. Use this to send the same message to multiple recipients.
-
-> URL
-
-```
-  https://ongair.im/api/v1/base/lists/:id/send_message
-```
-
-## Method
-
-You need to have created a list in advance.
-
-```shell
-  curl "https://ongair.im/api/v1/base/lists/{id}/send_message" \
-    -d id=5 \
-    -d text="Hello List" \
-    -d thread=false // optional \
-    -d token=<enter_token_here>
-```
-
-## Params
-
-Field | Type | Mandatory | Format | Meaning 
-------|------|-----------|--------|----------------
-id | Integer | Yes | 5 | List to send to
-text | String | Yes | Utf8 only encoded strings | The message to be sent
-thread | Boolean | No | true/false | Whether the response should be in a conversation thread with the original message
-
-
-
-
