@@ -1,11 +1,15 @@
 ---
 title: Ongair for Developers
 
-language_tabs:
-  - shell: cURL  
+language_tabs: # must be one of https://git.io/vQNgJ
+  - shell
+  - ruby
+  - python
+  - javascript
 
 toc_footers:
-  - <a href='https://ongair.im/users/sign_up'>Sign Up for an Account</a>
+  - <a href='#'>Sign Up for a Developer Key</a>
+  - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
 
 includes:
   - errors
@@ -17,12 +21,9 @@ search: true
 
 Welcome to the Ongair API! You can use our API to create awesome Bots and IM applications.
 
-This API allows you to send and receive:
+We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
 
-* Send and receive texts, images, video, audio, locations from supported Instant Messaging platforms
-* Administer your Ongair account  
-
-If you have any questions feel free to contact us at [dev@ongair.im](mailto:dev@ongair.im)
+This example API documentation page was created with [Slate](https://github.com/lord/slate). Feel free to edit it and use it as a base for your own API's documentation.
 
 # Authentication
 
@@ -186,3 +187,52 @@ Parameter | Description
 --------- | -----------
 ID | The ID of the kitten to retrieve
 
+## Delete a Specific Kitten
+
+```ruby
+require 'kittn'
+
+api = Kittn::APIClient.authorize!('meowmeowmeow')
+api.kittens.delete(2)
+```
+
+```python
+import kittn
+
+api = kittn.authorize('meowmeowmeow')
+api.kittens.delete(2)
+```
+
+```shell
+curl "http://example.com/api/kittens/2"
+  -X DELETE
+  -H "Authorization: meowmeowmeow"
+```
+
+```javascript
+const kittn = require('kittn');
+
+let api = kittn.authorize('meowmeowmeow');
+let max = api.kittens.delete(2);
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "id": 2,
+  "deleted" : ":("
+}
+```
+
+This endpoint deletes a specific kitten.
+
+### HTTP Request
+
+`DELETE http://example.com/kittens/<ID>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+ID | The ID of the kitten to delete
