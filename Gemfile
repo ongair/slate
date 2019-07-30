@@ -2,7 +2,10 @@ ruby '>=2.3.1'
 source 'https://rubygems.org'
 
 # Middleman
-gem 'middleman', '~>4.2.1'
+gem 'sass', '~> 3.2.10'
+gem 'compass', '0.12.2'
+gem 'compass-sourcemaps', "~> 0.12.2.sourcemaps.57a186c"
+gem 'middleman', '~>4.3.4'
 gem 'middleman-syntax', '~> 3.0.0'
 gem 'middleman-autoprefixer', '~> 2.7.0'
 gem 'middleman-sprockets', '~> 4.1.0'
